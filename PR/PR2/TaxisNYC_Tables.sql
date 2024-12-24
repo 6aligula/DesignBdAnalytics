@@ -1,0 +1,279 @@
+USE [SOURCE_vnaranjom]
+GO
+
+/****** Object:  Table [dbo].[DIM_LOCATION]    Script Date: 18/03/2024 17:16:00 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DIM_LOCATION](
+	[locationID] [numeric](4, 0) NOT NULL,
+	[borough] [varchar](50) NULL,
+	[zone] [varchar](100) NULL,
+	[service_zone] [varchar](100) NULL,
+ CONSTRAINT [PK_DIM_LOCATION] PRIMARY KEY CLUSTERED 
+(
+	[locationID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[DIM_LICENSE]    Script Date: 18/03/2024 17:36:39 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DIM_LICENSE](
+	[licenseID] [numeric](8,0) NOT NULL,
+	[license_num] [varchar](6) NOT NULL,
+	[entity_name] [varchar](300) NULL,
+	[telephone] [nvarchar](12) NULL,
+	[SHL_endorsed] [varchar](3) NULL,
+	[building] [nvarchar](10) NULL,
+	[street] [varchar](150) NULL,
+	[city] [varchar](50) NULL,
+	[state] [varchar](50) NULL,
+	[postcode] [nvarchar](10) NULL,
+	[type_base] [varchar](50) NULL,
+	[date] [datetime] NULL,
+	[hora] [time](0) NULL,
+	[location] [varchar](50) NULL,
+ CONSTRAINT [PK_DIM_LICENSE] PRIMARY KEY CLUSTERED 
+(
+	[licenseID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[DIM_TIME]    Script Date: 18/03/2024 18:13:11 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DIM_TIME](
+	[timeID] [numeric](18, 0) NOT NULL,
+	[year] [nchar](4) NULL,
+	[month] [nchar](2) NULL,
+	[day] [nchar](2) NULL,
+	[hour] [nchar](2) NULL,
+	[min] [nchar](2) NULL,
+	[sg] [nchar](2) NULL,
+	[date] [datetime] NOT NULL,
+ CONSTRAINT [PK_DIM_TIME] PRIMARY KEY CLUSTERED 
+(
+	[timeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[FACT_FHV_TRIP]    Script Date: 18/03/2024 18:31:26 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[FACT_FHV_TRIP](
+	[fhv_trip_id] [numeric](18, 0) NOT NULL,
+	[licenseID] [numeric](8, 0) NOT NULL,
+	[pickup_datetimeID] [numeric](18, 0) NOT NULL,
+	[dropoff_datetimeID] [numeric](18, 0) NOT NULL,
+	[PULocationID] [numeric](4, 0) NULL,
+	[DOLocationID] [numeric](4, 0) NULL,
+	[SR_flag] [varchar](3) NULL,
+	[Affiliated_num] [numeric](8, 0) NOT NULL,
+	[fhv_trip] [numeric](18, 0) NULL,
+	[duration] [numeric](18, 0) NULL,
+ CONSTRAINT [PK_FACT_FHV_TRIP] PRIMARY KEY CLUSTERED 
+(
+	[fhv_trip_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_FHV_TRIP_FK1] FOREIGN KEY([licenseID])
+REFERENCES [dbo].[DIM_LICENSE] ([licenseID])
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP] CHECK CONSTRAINT [FACT_FHV_TRIP_FK1]
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_FHV_TRIP_FK2] FOREIGN KEY([pickup_datetimeID])
+REFERENCES [dbo].[DIM_TIME] ([timeID])
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP] CHECK CONSTRAINT [FACT_FHV_TRIP_FK2]
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_FHV_TRIP_FK3] FOREIGN KEY([dropoff_datetimeID])
+REFERENCES [dbo].[DIM_TIME] ([timeID])
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP] CHECK CONSTRAINT [FACT_FHV_TRIP_FK3]
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_FHV_TRIP_FK4] FOREIGN KEY([PULocationID])
+REFERENCES [dbo].[DIM_LOCATION] ([locationID])
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP] CHECK CONSTRAINT [FACT_FHV_TRIP_FK4]
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_FHV_TRIP_FK5] FOREIGN KEY([DOLocationID])
+REFERENCES [dbo].[DIM_LOCATION] ([locationID])
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP] CHECK CONSTRAINT [FACT_FHV_TRIP_FK5]
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_FHV_TRIP_FK6] FOREIGN KEY([Affiliated_num])
+REFERENCES [dbo].[DIM_LICENSE] ([licenseID])
+GO
+
+ALTER TABLE [dbo].[FACT_FHV_TRIP] CHECK CONSTRAINT [FACT_FHV_TRIP_FK6]
+GO
+
+
+/****** Object:  Table [dbo].[DIM_PAYMENT]    Script Date: 18/03/2024 19:22:55 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DIM_PAYMENT](
+	[paymentID] [numeric](2, 0) NOT NULL,
+	[Payment_type] [varchar](100) NULL,
+ CONSTRAINT [PK_DIM_PAYMENT] PRIMARY KEY CLUSTERED 
+(
+	[paymentID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[DIM_RATE]    Script Date: 18/03/2024 19:23:13 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DIM_RATE](
+	[rateID] [numeric](2, 0) NOT NULL,
+	[name_rate] [varchar](50) NULL,
+ CONSTRAINT [PK_DIM_RATE] PRIMARY KEY CLUSTERED 
+(
+	[rateID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Table [dbo].[DIM_VENDOR]    Script Date: 18/03/2024 19:23:42 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[DIM_VENDOR](
+	[vendorID] [numeric](2, 0) NOT NULL,
+	[name_vendor] [varchar](100) NULL,
+ CONSTRAINT [PK_DIM_VENDOR] PRIMARY KEY CLUSTERED 
+(
+	[vendorID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+/****** Object:  Table [dbo].[FACT_NYTAXI_TRIP]    Script Date: 18/03/2024 19:12:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[FACT_NYTAXI_TRIP](
+	[nytaxi_trip_id] [numeric](15, 0) NOT NULL,
+	[vendorID] [numeric](2, 0) NOT NULL,
+	[pickup_datetimeID] [numeric](18, 0) NOT NULL,
+	[dropoff_datetimeID] [numeric](18, 0) NOT NULL,
+	[rateID] [numeric](2, 0) NULL,
+	[PULocationID] [numeric](4, 0) NULL,
+	[DOLocationID] [numeric](4, 0) NULL,
+	[paymentID] [numeric](2, 0) NULL,
+	[IsStoredAndForwarded] [char](1) NULL,
+	[extra] [char](1) NULL,
+	[mta_tax] [char](1) NULL,
+	[tip_amount] [char](1) NULL,
+	[tolls_amount] [char](1) NULL,
+	[improvement_surcharge] [char](1) NULL,
+	[congestion_surcharge] [char](1) NULL,
+	[airport_free] [char](1) NULL,
+	[taxi_trip] [numeric](15, 0) NULL,
+	[passenger] [numeric](15, 0) NULL,
+	[distance] [numeric](15, 0) NULL,
+	[duration] [numeric](18, 0) NULL,
+	[fare_amount] [numeric](15, 0) NULL,
+	[total_amount] [numeric](15, 0) NULL,
+ CONSTRAINT [PK_FACT_NYTAXI_TRIP] PRIMARY KEY CLUSTERED 
+(
+	[nytaxi_trip_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_NYTAXI_TRIP_FK1] FOREIGN KEY([pickup_datetimeID])
+REFERENCES [dbo].[DIM_TIME] ([timeID])
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP] CHECK CONSTRAINT [FACT_NYTAXI_TRIP_FK1]
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_NYTAXI_TRIP_FK2] FOREIGN KEY([dropoff_datetimeID])
+REFERENCES [dbo].[DIM_TIME] ([timeID])
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP] CHECK CONSTRAINT [FACT_NYTAXI_TRIP_FK2]
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_NYTAXI_TRIP_FK3] FOREIGN KEY([PULocationID])
+REFERENCES [dbo].[DIM_LOCATION] ([locationID])
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP] CHECK CONSTRAINT [FACT_NYTAXI_TRIP_FK3]
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_NYTAXI_TRIP_FK4] FOREIGN KEY([DOLocationID])
+REFERENCES [dbo].[DIM_LOCATION] ([locationID])
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP] CHECK CONSTRAINT [FACT_NYTAXI_TRIP_FK4]
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_NYTAXI_TRIP_FK5] FOREIGN KEY([vendorID])
+REFERENCES [dbo].[DIM_VENDOR] ([vendorID])
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP] CHECK CONSTRAINT [FACT_NYTAXI_TRIP_FK5]
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_NYTAXI_TRIP_FK6] FOREIGN KEY([paymentID])
+REFERENCES [dbo].[DIM_PAYMENT] ([PaymentID])
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP] CHECK CONSTRAINT [FACT_NYTAXI_TRIP_FK6]
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP]  WITH CHECK ADD  CONSTRAINT [FACT_NYTAXI_TRIP_FK7] FOREIGN KEY([rateID])
+REFERENCES [dbo].[DIM_RATE] ([rateID])
+GO
+
+ALTER TABLE [dbo].[FACT_NYTAXI_TRIP] CHECK CONSTRAINT [FACT_NYTAXI_TRIP_FK7]
+GO

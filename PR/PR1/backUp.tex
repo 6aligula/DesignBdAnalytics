@@ -1,0 +1,304 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage[margin=1.5cm]{geometry} % Ajuste de márgenes de 2cm
+\usepackage{array}
+\usepackage{float}
+
+\title{PR1 – Análisis y Diseño de un Almacén de Datos}
+\author{Vinicio Naranjo Mosquera}
+\date{14/11/2024}
+
+\begin{document}
+
+\maketitle
+
+\section*{Análisis de los Requisitos}
+
+El análisis de los requisitos se basa en identificar las necesidades específicas que tiene la organización respecto al análisis de la información de viajes de vehículos de alquiler en Nueva York. En esta fase, se debe pensar tanto en las necesidades actuales como en posibles necesidades futuras, para así cubrir de manera integral el análisis de la información. La necesidad principal de la organización es disponer de información integrada para su análisis y difusión mediante herramientas de inteligencia de negocio. Esto facilitará la toma de decisiones para los usuarios potenciales y permitirá cumplir el objetivo de analizar los viajes de vehículos de alquiler en Nueva York.
+A continuación, se especifican las preguntas que el sistema debe ser capaz de responder para cubrir las necesidades de los usuarios potenciales.
+
+\section*{Preguntas Clave para el Análisis de Viajes de Vehículos de Alquiler}
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{¿Cuántos viajes de vehículos de alquiler (tanto FHV como taxis amarillos) se inician en cada distrito y zona de Nueva York en un periodo específico?}
+    \begin{itemize}
+        \item Permite analizar la demanda en distintas zonas de la ciudad, útil para planificación de servicios y asignación de recursos.
+    \end{itemize}
+    
+    \item \textbf{¿Cuál es el tiempo promedio de viaje y la distancia recorrida para los servicios de FHV y taxis amarillos por cada zona de recogida y destino?}
+    \begin{itemize}
+        \item Proporciona información sobre la duración y longitud de los viajes, importante para el análisis de eficiencia y costos de operación.
+    \end{itemize}
+    
+    \item \textbf{¿Cuáles son los patrones de uso de los diferentes tipos de pago (tarjeta, efectivo, etc.) en las distintas zonas de la ciudad?}
+    \begin{itemize}
+        \item Ayuda a entender las preferencias de pago por zona y permite adaptar estrategias de servicio según el comportamiento del cliente.
+    \end{itemize}
+    
+    \item \textbf{¿Qué zonas experimentan los tiempos de espera más largos antes de recoger a un pasajero?}
+    \begin{itemize}
+        \item Identifica áreas con posible escasez de vehículos, lo que facilita ajustar la distribución de estos para mejorar el servicio.
+    \end{itemize}
+    
+    \item \textbf{¿Cómo varía la cantidad de viajes según las franjas horarias (mañana, tarde, noche) en diferentes distritos?}
+    \begin{itemize}
+        \item Permite observar patrones de demanda por horarios, esencial para optimizar la disponibilidad de vehículos en distintos momentos del día.
+    \end{itemize}
+    
+    \item \textbf{¿Cuál es el impacto de la congestión (congestion surcharge) y otras tarifas en el precio total de los viajes?}
+    \begin{itemize}
+        \item Permite analizar cómo las tarifas adicionales afectan el costo para los usuarios y evaluar el impacto económico de la congestión.
+    \end{itemize}
+    
+    \item \textbf{¿Cuántos viajes de vehículos de alquiler terminan en áreas específicas como aeropuertos (LaGuardia, JFK) y centros turísticos (Times Square)?}
+    \begin{itemize}
+        \item Facilita el monitoreo de la actividad en puntos de interés clave, útil para planificar servicios especiales o campañas en estos lugares.
+    \end{itemize}
+    
+    \item \textbf{¿Cuál es la evolución mensual de los viajes en áreas con alta demanda, como el centro de Manhattan o Brooklyn?}
+    \begin{itemize}
+        \item Conocer esta tendencia mensual ayuda a realizar previsiones de demanda a largo plazo y definir estrategias de crecimiento o ajustes en la flota.
+    \end{itemize}
+    
+    \item \textbf{¿Qué patrones de viaje existen para los servicios de FHV y taxis amarillos durante eventos específicos (como ferias, festivales)?}
+    \begin{itemize}
+        \item Permite evaluar el impacto de eventos locales en la demanda de transporte y coordinar recursos adicionales durante estos eventos.
+    \end{itemize}
+    
+    \item \textbf{¿Cuántos viajes resultan en un tiempo de espera corto (por debajo de 5 minutos) y en qué zonas se encuentran?}
+    \begin{itemize}
+        \item Identificar zonas con menor tiempo de espera permite analizar áreas con alta disponibilidad de vehículos, optimizando la asignación para evitar saturación en esas zonas.
+    \end{itemize}
+\end{enumerate}
+
+\section*{Conclusión}
+
+Estas preguntas están diseñadas para proporcionar una visión integral de la operación de los vehículos de alquiler en Nueva York, incluyendo aspectos de tiempo, distancia, zona, preferencia de pago y costos asociados. Este enfoque permite analizar patrones de demanda y comportamiento de los usuarios en diferentes momentos y ubicaciones específicas, cumpliendo con el objetivo de proporcionar información integrada para una toma de decisiones informada sobre el servicio de vehículos de alquiler en Nueva York.
+
+
+
+\section*{Análisis de la Fuente de Datos \texttt{yellow\_tripdata}}
+
+\subsection*{Descripción del Archivo}
+\begin{itemize}
+    \item \textbf{Nombre de archivo}: \texttt{yellow\_tripdata-001.zip} (fichero comprimido, contiene varios CSV).
+    \item \textbf{Tipo}: Fichero de texto plano (CSV) con delimitador de coma (`,`).
+    \item \textbf{Formato}: Incluye cabecera en la primera fila con los nombres de los campos.
+    \item \textbf{Período}: Contiene datos de múltiples meses de viajes de taxis amarillos, ejemplo mostrado desde octubre 2023 a enero 2024.
+\end{itemize}
+
+\subsection*{Estructura de Campos}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|>{\centering\arraybackslash}m{4cm}|>{\centering\arraybackslash}m{6cm}|>{\centering\arraybackslash}m{2cm}|>{\centering\arraybackslash}m{4cm}|}
+    \hline
+    \textbf{Nombre de campo} & \textbf{Descripción} & \textbf{Tipo} & \textbf{Ejemplo} \\
+    \hline
+    VendorID & ID del proveedor del taxi & Numérico & 2 \\
+    \hline
+    tpep\_pickup\_datetime & Fecha y hora de recogida & Fecha/hora & 2024-01-01 00:57:55 \\
+    \hline
+    tpep\_dropoff\_datetime & Fecha y hora de llegada & Fecha/hora & 2024-01-01 01:17:43 \\
+    \hline
+    passenger\_count & Número de pasajeros & Numérico & 1.0 \\
+    \hline
+    trip\_distance & Distancia recorrida & Numérico & 1.72 \\
+    \hline
+    RatecodeID & Código de tarifa & Numérico & 1.0 \\
+    \hline
+    store\_and\_fwd\_flag & Indicador de almacenamiento y reenvío & Texto & N \\
+    \hline
+    PULocationID & ID de la ubicación de recogida & Numérico & 186 \\
+    \hline
+    DOLocationID & ID de la ubicación de destino & Numérico & 79 \\
+    \hline
+    payment\_type & Tipo de pago & Numérico & 2 \\
+    \hline
+    fare\_amount & Importe de la tarifa & Numérico & 17.7 \\
+    \hline
+    extra & Cargo extra & Numérico & 1.0 \\
+    \hline
+    mta\_tax & Impuesto MTA & Numérico & 0.5 \\
+    \hline
+    tip\_amount & Propina & Numérico & 0.0 \\
+    \hline
+    tolls\_amount & Importe de peajes & Numérico & 0.0 \\
+    \hline
+    improvement\_surcharge & Recargo por mejoras & Numérico & 1.0 \\
+    \hline
+    total\_amount & Importe total & Numérico & 22.7 \\
+    \hline
+    congestion\_surcharge & Recargo por congestión & Numérico & 2.5 \\
+    \hline
+    Airport\_fee & Tarifa de aeropuerto & Numérico & 0.0 \\
+    \hline
+\end{tabular}
+\caption{Estructura de campos de \texttt{yellow\_tripdata}}
+\end{table}
+
+\subsection*{Volumetría}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{\#} & \textbf{Nombre del fichero} & \textbf{Total registros} \\
+    \hline
+    1 & \texttt{yellow\_tripdata\_2023-10.csv} & 2,964,624 \\
+    \hline
+    2 & \texttt{yellow\_tripdata\_2023-11.csv} & 3,522,285 \\
+    \hline
+    3 & \texttt{yellow\_tripdata\_2023-12.csv} & 3,339,715 \\
+    \hline
+    4 & \texttt{yellow\_tripdata\_2024-01.csv} & 3,376,567 \\
+    \hline
+    \multicolumn{2}{|c|}{\textbf{Total}} & \textbf{13,203,191} \\
+    \hline
+\end{tabular}
+\caption{Volumetría de los archivos \texttt{yellow\_tripdata}}
+\end{table}
+
+\subsection*{Estimación de Volumen para Carga Inicial}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|>{\centering\arraybackslash}m{6cm}|>{\centering\arraybackslash}m{4cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{4cm}|}
+    \hline
+    \textbf{Fichero} & \textbf{Registros} & \textbf{Columnas} & \textbf{Datos Estimados (MB)} \\
+    \hline
+    yellow\_tripdata-001.zip & 13,203,191 & 19 & 1,526.2 \\
+    \hline
+\end{tabular}
+\caption{Estimación de volumen para la carga inicial}
+\end{table}
+
+\subsection*{Observaciones}
+\begin{itemize}
+    \item \textbf{Transformación de Fechas}: Es importante normalizar el formato de fechas para que sea coherente con otros archivos.
+    \item \textbf{Tratamiento de Nulos}: Asegurar que los valores nulos o vacíos se traten de manera uniforme, especialmente en el campo \texttt{store\_and\_fwd\_flag}.
+    \item \textbf{Carga Inicial}: Dado el volumen significativo de datos, se sugiere cargar los datos en el sistema en particiones mensuales para optimizar el rendimiento.
+\end{itemize}
+
+
+\section*{Análisis de la Fuente de Datos \texttt{fhv\_tripdata}}
+
+\subsection*{Descripción del Archivo}
+\begin{itemize}
+    \item \textbf{Nombre de archivo}: \texttt{fhv\_tripdata-001.zip} (fichero comprimido, contiene varios CSV).
+    \item \textbf{Tipo}: Fichero de texto plano (CSV) con delimitador de coma (`,`).
+    \item \textbf{Formato}: Incluye cabecera en la primera fila con los nombres de los campos.
+    \item \textbf{Período}: Contiene datos de múltiples meses de viajes de vehículos de alquiler (FHV) desde octubre 2023 a enero 2024.
+\end{itemize}
+
+\subsection*{Estructura de Campos}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|>{\centering\arraybackslash}m{4cm}|>{\centering\arraybackslash}m{6cm}|>{\centering\arraybackslash}m{2cm}|>{\centering\arraybackslash}m{4cm}|}
+    \hline
+    \textbf{Nombre de campo} & \textbf{Descripción} & \textbf{Tipo} & \textbf{Ejemplo} \\
+    \hline
+    dispatching\_base\_num & Número de licencia TLC. & Numérico & B00254 \\
+    \hline
+    pickup\_datetime & Fecha y hora de inicio del viaje (activación del taxímetro). & Fecha/hora & 2023-10-01 00:24:00 \\
+    \hline
+    dropoff\_datetime & Fecha y hora de final del viaje (desactivación del taxímetro). & Fecha/hora & 2023-10-01 00:38:39 \\
+    \hline
+    PUlocationID & ID de la ubicación de recogida & Numérico & 48.0 \\
+    \hline
+    DOlocationID & ID de la ubicación de entrega & Numérico & 107.0 \\
+    \hline
+    SR\_flag & Indicador (s/n) de si el viaje es compartido & Texto &  \\
+    \hline
+    Affiliated\_base\_number & Número de base a la que está afiliado el vehículo & Numérico & B00254 \\
+    \hline
+\end{tabular}
+\caption{Estructura de campos de \texttt{fhv\_tripdata}}
+\end{table}
+
+\vspace{1cm} % Añade 1 cm de espacio en blanco (ajusta según lo necesario)
+
+\subsection*{Volumetría}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|}
+    \hline
+    \textbf{\#} & \textbf{Nombre del fichero} & \textbf{Total registros} \\
+    \hline
+    1 & \texttt{fhv\_tripdata\_2023-10.csv} & 1,628,438 \\
+    \hline
+    2 & \texttt{fhv\_tripdata\_2023-11.csv} & 1,343,846 \\
+    \hline
+    3 & \texttt{fhv\_tripdata\_2023-12.csv} & 1,376,748 \\
+    \hline
+    4 & \texttt{fhv\_tripdata\_2024-01.csv} & 1,290,116 \\
+    \hline
+    \multicolumn{2}{|c|}{\textbf{Total}} & \textbf{5,639,148} \\
+    \hline
+\end{tabular}
+\caption{Volumetría de los archivos \texttt{fhv\_tripdata}}
+\end{table}
+
+\subsection*{Estimación de Volumen para Carga Inicial}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|>{\centering\arraybackslash}m{6cm}|>{\centering\arraybackslash}m{4cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{4cm}|}
+    \hline
+    \textbf{Fichero} & \textbf{Registros} & \textbf{Columnas} & \textbf{Datos Estimados (MB)} \\
+    \hline
+    fhv\_tripdata-001.zip & 5,639,148 & 7 & 199 \\
+    \hline
+\end{tabular}
+\caption{Estimación de volumen para la carga inicial de \texttt{fhv\_tripdata}}
+\end{table}
+
+\section*{Análisis de la Fuente de Datos \texttt{taxi\_zone\_lookup}}
+
+\subsection*{Descripción del Archivo}
+\begin{itemize}
+    \item \textbf{Nombre de archivo}: \texttt{taxi\_zone\_lookup.csv}
+    \item \textbf{Tipo}: Fichero de texto plano (CSV) con delimitador de coma (`,`).
+    \item \textbf{Formato}: Incluye cabecera en la primera fila con los nombres de los campos.
+    \item \textbf{Registros Totales}: 265.
+\end{itemize}
+
+\subsection*{Estructura de Campos}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|>{\centering\arraybackslash}m{4cm}|>{\centering\arraybackslash}m{6cm}|>{\centering\arraybackslash}m{2cm}|>{\centering\arraybackslash}m{4cm}|}
+    \hline
+    \textbf{Nombre de campo} & \textbf{Descripción} & \textbf{Tipo} & \textbf{Ejemplo} \\
+    \hline
+    LocationID & ID de la ubicación & Numérico & 1 \\
+    \hline
+    Borough & Distrito o condado de la ubicación & Texto & Queens \\
+    \hline
+    Zone & Nombre de la zona & Texto & Jamaica Bay \\
+    \hline
+    service\_zone & Zona de servicio & Texto & Boro Zone \\
+    \hline
+\end{tabular}
+\caption{Estructura de campos de \texttt{taxi\_zone\_lookup}}
+\end{table}
+
+\subsection*{Volumetría}
+\begin{table}[H]
+\centering
+\begin{tabular}{|>{\centering\arraybackslash}m{6cm}|>{\centering\arraybackslash}m{4cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{4cm}|}
+    \hline
+    \textbf{Fichero} & \textbf{Registros} & \textbf{Columnas} & \textbf{Datos Estimados (KB)} \\
+    \hline
+    taxi\_zone\_lookup.csv & 265 & 4 & 13.97 \\
+    \hline
+\end{tabular}
+\caption{Estimación de volumen para la carga inicial de \texttt{taxi\_zone\_lookup.csv}}
+\end{table}
+
+\end{document}
+
+

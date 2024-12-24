@@ -1,0 +1,8 @@
+.DS_Store
+yellow_env
+fuentes/CURRENT_BASES_UPDATED_PostCode.csv
+# Ignorar todos los archivos CSV en PR/fuentes/
+PR/PR1/fuentes/*.csv
+RETOS/Fuentes/
+PEC2/BDA_PEC2_Naranjo_Mosquera_Vinicio.mp4
+overleaf/

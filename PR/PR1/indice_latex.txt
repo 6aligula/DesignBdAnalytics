@@ -1,0 +1,45 @@
+\documentclass{report}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\title{PR1 – Análisis y Diseño de un Almacén de Datos}
+\author{Vinicio Naranjo Mosquera}
+\date{14/11/2024}
+
+\begin{document}
+
+\maketitle
+
+\section*{Índice}
+
+\section{Análisis de Requisitos}
+    \subsection{Definición de Preguntas de Negocio}
+        \subsubsection{Ejemplo de preguntas clave que el sistema debe responder (mínimo de cinco)}
+    \subsection{Objetivos de los Usuarios y Perspectivas de Análisis}
+    \subsection{Priorización de Consultas y Casos de Uso}
+
+\section{Análisis de las Fuentes de Datos}
+    \subsection{Descripción y Estructura de las Fuentes de Datos Proporcionadas}
+        \subsubsection{Identificación de campos, tipos de datos, descripciones y ejemplos}
+        \subsubsection{Observaciones sobre listas de valores y estructuras de datos}
+    \subsection{Análisis de Calidad y Transformación de los Datos}
+    \subsection{Volumetría y Planificación para la Carga Inicial}
+
+\section{Análisis Funcional y Selección de Arquitectura}
+    \subsection{Definición de Requisitos Funcionales}
+        \subsubsection{Clasificación de requisitos entre Exigibles y Deseables}
+        \subsubsection{Priorización de los Requisitos Identificados}
+    \subsection{Selección y Justificación de la Arquitectura (Esquema en Estrella o Copo de Nieve)}
+
+\section{Diseño del Modelo Multidimensional}
+    \subsection{Diseño Conceptual}
+        \subsubsection{Identificación de Hechos y Métricas (por ejemplo, FACT\_FHV\_TRIP)}
+        \subsubsection{Definición de Dimensiones (Tiempo, Ubicación, Licencia, etc.)}
+    \subsection{Diseño Lógico}
+        \subsubsection{Definición de Relaciones, Claves Primarias y Foráneas}
+        \subsubsection{Diagrama del Modelo Lógico}
+    \subsection{Diseño Físico}
+        \subsubsection{Implementación en SQL Server (tipos de datos, claves e índices)}
+        \subsubsection{Estrategias de Optimización de Consultas}
+
+\end{document}
